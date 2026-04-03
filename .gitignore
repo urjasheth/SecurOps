@@ -1,0 +1,25 @@
+# Python
+venv/
+*.egg-info/
+__pycache__/
+*.pyc
+build/
+dist/
+
+# Security Scan Outputs
+scan_output.txt
+staged_scan_output.txt
+full_scan_output.txt
+detailed_scan.txt
+gitleaks_report.json
+
+# OS/IDE
+.DS_Store
+.vscode/
+.idea/
+
+# iOS Sample
+test/samples/ios/Pods/
+test/samples/ios/*.xcworkspace
+test/samples/ios/xcuserdata/
+test/samples/ios/DerivedData/

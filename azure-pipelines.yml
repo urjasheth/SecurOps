@@ -1,0 +1,47 @@
+trigger:
+  - main
+  - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self
+  fetchDepth: 0
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.10'
+  displayName: 'Use Python 3.10'
+
+- script: |
+    # Install Gitleaks
+    VERSION="8.18.2"
+    curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz | tar xz
+    sudo mv gitleaks /usr/local/bin/
+  displayName: 'Install Gitleaks'
+
+- script: |
+    # Install Trivy
+    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+  displayName: 'Install Trivy'
+
+- script: |
+    # Install Semgrep
+    pip install semgrep
+  displayName: 'Install Semgrep'
+
+- script: |
+    # Run Gitleaks
+    gitleaks detect --source . --verbose --config .gitleaks.toml
+  displayName: 'Run Gitleaks'
+
+- script: |
+    # Run Semgrep
+    semgrep --config=.semgrep.yml --error
+  displayName: 'Run Semgrep'
+
+- script: |
+    # Run Trivy
+    trivy fs . --scanners vuln,config --severity HIGH,CRITICAL --exit-code 1
+  displayName: 'Run Trivy'
