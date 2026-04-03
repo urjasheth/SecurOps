@@ -1,0 +1,18 @@
+rules:
+  - id: insecure-http-usage
+    pattern-regex: 'http://'
+    message: "Potential insecure HTTP usage detected. Use HTTPS instead."
+    languages: [dart, swift, kt, java, python, js, ts]
+    severity: WARNING
+
+  - id: hardcoded-secrets
+    pattern-regex: '(?i)(api[_-]?key|secret|password|token|auth)\s*[:=]\s*["''][^"'']+["'']'
+    message: "Potential hardcoded secret detected."
+    languages: [dart, swift, kt, java, python, js, ts]
+    severity: ERROR
+
+  - id: debug-mode-enabled
+    pattern-regex: 'debug:\s*true'
+    message: "Debug mode might be enabled in production."
+    languages: [yaml, json]
+    severity: WARNING

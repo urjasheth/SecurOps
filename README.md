@@ -18,7 +18,7 @@ Aims for:
 Run the main setup script in your project root:
 
 ```bash
-chmod +x scripts/setup.sh scripts/install_tools.sh scripts/setup_hooks.sh
+chmod +x scripts/setup.sh securop/scripts/install_tools.sh securop/scripts/setup_hooks.sh
 ./scripts/setup.sh
 ```
 
@@ -27,6 +27,24 @@ This will:
 2. Set up a Python virtual environment.
 3. Install the `securop` CLI tool.
 4. Configure a Git pre-commit hook to run scans before every commit.
+
+## Installation in Other Projects
+
+To use SecurOps in any of your other repositories, simply install it via pip and initialize:
+
+```bash
+# 1. Install directly from Git
+pip install git+https://github.com/urjasheth/SecurOps.git
+
+# 2. Initialize SecurOps in your project
+securop init
+```
+
+This automated process will:
+- Detect your Git environment.
+- Install all required security binaries (Gitleaks, Semgrep, Trivy).
+- Set up a Git pre-commit hook to block insecure commits.
+- Create a default `.semgrep.yml` with robust mobile security rules (if one doesn't exist).
 
 ## Usage
 
