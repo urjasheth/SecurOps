@@ -1,4 +1,0 @@
-recursive-include hooks *
-recursive-include scripts *
-include requirements.txt
-include README.md

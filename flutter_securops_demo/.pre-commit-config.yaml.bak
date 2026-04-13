@@ -1,0 +1,13 @@
+# .pre-commit-config.yaml
+# Use this in your Android, iOS, or Flutter project root.
+
+repos:
+  - repo: https://github.com/trufflesecurity/trufflehog
+    rev: v3.63.11
+    hooks:
+      - id: trufflehog
+        name: TruffleHog Secret Scan
+        description: Scan for secrets using TruffleHog.
+        entry: trufflehog git file://. --since-commit HEAD --only-verified --fail
+        language: system
+        stages: [commit]

@@ -1,8 +1,0 @@
-platform :ios, '12.0'
-
-target 'SecurOpsSample' do
-  use_frameworks!
-
-  pod 'AFNetworking', '3.0' # Very old version with many vulnerabilities
-  pod 'Firebase/Core', '6.0.0'
-end

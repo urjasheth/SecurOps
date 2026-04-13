@@ -1,0 +1,30 @@
+# semgrep-mobile.yml
+# This file defines the SAST rules for your mobile codebase.
+
+rules:
+  - id: android-insecure-storage
+    patterns:
+      - pattern: openFileOutput(..., MODE_WORLD_READABLE)
+    message: "Critical: Insecure file storage found. Using MODE_WORLD_READABLE allows other apps to steal your data."
+    severity: ERROR
+    languages: [java, kotlin]
+
+  - id: ios-insecure-nslog
+    patterns:
+      - pattern: NSLog(...)
+    message: "Warning: NSLog found. Insecurely logging sensitive data can be captured by device logs."
+    severity: WARNING
+    languages: [swift]
+
+  - id: flutter-insecure-random
+    patterns:
+      - pattern: Random(...)
+    message: "Warning: Standard Random used. Use Random.secure() for cryptographic or security-sensitive data."
+    severity: WARNING
+    languages: [dart]
+
+  - id: hardcoded-api-endpoint
+    pattern-regex: "https://api\\.staging\\.internal"
+    message: "Warning: Hardcoded internal API endpoint found. Ensure this is replaced by environment variables."
+    severity: WARNING
+    languages: [java, kotlin, swift, dart]

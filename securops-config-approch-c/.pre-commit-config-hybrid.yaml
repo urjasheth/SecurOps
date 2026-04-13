@@ -1,0 +1,50 @@
+# .pre-commit-config-hybrid.yaml
+# SecurOps Approach C: High Fidelity + Native Execution
+# Supports: Android, iOS, Flutter, Web, .NET, PHP
+
+repos:
+  # 1. SECRET SCANNING (Advanced: Verified Pings)
+  - repo: https://github.com/trufflesecurity/trufflehog
+    rev: v3.63.11
+    hooks:
+      - id: trufflehog
+        name: "🔐 Verified Secret Scanner (TruffleHog)"
+        description: "Scans for secrets and performs API verification pings"
+        entry: trufflehog git file://. --since-commit HEAD --only-verified --fail
+        language: system
+        stages: [commit]
+
+  # 2. SAST SCANNING (Unified Ruleset)
+  - repo: https://github.com/returntocorp/semgrep
+    rev: v1.52.0
+    hooks:
+      - id: semgrep
+        name: "🔍 Unified Security Scanner (Semgrep)"
+        description: "Scans for Android, iOS, Flutter, .NET, and PHP vulnerabilities"
+        entry: semgrep scan --config=semgrep-hybrid.yml --error --quiet
+        language: system
+        pass_filenames: false
+        stages: [commit]
+
+  # 3. DEPENDENCY SCANNING (Trivy - Multi-tech)
+  - repo: local
+    hooks:
+      - id: trivy-scan
+        name: "🛡️ Multi-Stack Dependency Scanner (Trivy)"
+        description: "Scans Gradle, SPM, Pubspec, NuGet, and Composer dependencies"
+        entry: trivy fs --scanners vuln --severity HIGH,CRITICAL .
+        language: system
+        pass_filenames: false
+        stages: [push]
+
+  # 4. BASIC SAFETY CHECKS
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: detect-private-key
+        name: "🔑 Private Key Detector"
+      - id: check-merge-conflict
+        name: "🔀 Merge Conflict Checker"
+      - id: check-added-large-files
+        name: "📏 Large File Checker"
+        args: ['--maxkb=1000']

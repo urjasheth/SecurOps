@@ -1,0 +1,89 @@
+# semgrep-hybrid.yml
+# This file defines the SAST rules for all organizational technologies:
+# Android, iOS, Flutter, Web, .NET, and PHP.
+
+rules:
+  # --- MOBILE STACK ---
+  - id: android-insecure-storage
+    patterns:
+      - pattern: openFileOutput(..., MODE_WORLD_READABLE)
+    message: "Critical: Insecure file storage found. Using MODE_WORLD_READABLE allows other apps to steal your data."
+    severity: ERROR
+    languages: [java, kotlin]
+
+  - id: ios-insecure-nslog
+    patterns:
+      - pattern: NSLog(...)
+    message: "Warning: NSLog found. Insecurely logging sensitive data can be captured by device logs."
+    severity: WARNING
+    languages: [swift]
+
+  - id: ios-insecure-keychain-access
+    patterns:
+      - pattern: kSecAttrAccessibleAlways
+    message: "Critical: Insecure Keychain accessibility level (kSecAttrAccessibleAlways). Data is accessible even when the device is locked. Use kSecAttrAccessibleWhenUnlocked."
+    severity: ERROR
+    languages: [swift]
+
+  - id: ios-weak-biometric-policy
+    patterns:
+      - pattern: LAContext().evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, ...)
+    message: "Warning: Using biometric authentication without fallback logic. Ensure proper error handling for lockout scenarios."
+    severity: WARNING
+    languages: [swift]
+
+  - id: ios-webview-javascript-enabled
+    patterns:
+      - pattern: $CONFIG.javaScriptEnabled = true
+    message: "Warning: JavaScript is explicitly enabled in WKWebView. Ensure you only load trusted content to prevent XSS."
+    severity: WARNING
+    languages: [swift]
+
+  - id: flutter-insecure-random
+    patterns:
+      - pattern: Random(...)
+    message: "Warning: Standard Random used. Use Random.secure() for cryptographic or security-sensitive data."
+    severity: WARNING
+    languages: [dart]
+
+  # --- ENTERPRISE STACK (.NET) ---
+  - id: dotnet-insecure-deserialization
+    patterns:
+      - pattern: new BinaryFormatter().Deserialize(...)
+    message: "Critical: Insecure BinaryFormatter deserialization detected. Use JSON.NET or other secure serialization."
+    severity: ERROR
+    languages: [csharp]
+
+  - id: dotnet-hardcoded-connection-string
+    pattern-regex: "Server=[^;]+;Database=[^;]+;User Id=[^;]+;Password=[^;]+"
+    message: "Critical: Hardcoded connection string found. Store credentials in User Secrets or Environment Variables."
+    severity: ERROR
+    languages: [csharp]
+
+  # --- WEB STACK (PHP) ---
+  - id: php-insecure-eval
+    patterns:
+      - pattern: eval(...)
+    message: "Critical: Use of eval() detected. This can lead to Remote Code Execution (RCE)."
+    severity: ERROR
+    languages: [php]
+
+  - id: php-direct-output-injection
+    patterns:
+      - pattern: echo $_GET[...]
+    message: "Warning: Direct output of user input detected. Potential XSS vulnerability."
+    severity: WARNING
+    languages: [php]
+
+  # --- SHARED API & SECRETS ---
+  - id: hardcoded-api-endpoint
+    pattern-regex: "https://api\\.staging\\.internal"
+    message: "Critical: Hardcoded internal API endpoint found. This must be replaced by environment variables before shipping."
+    severity: ERROR
+    languages: [java, kotlin, swift, dart, csharp, php, javascript]
+
+  - id: hardcoded-secret-key
+    pattern-regex: "(?i)(api_key|apiKey|secret|token)\\s*=\\s*\"[^\"]+\""
+    message: "Critical: Hardcoded secret or API key found. This must be stored in a secure vault or environment variable."
+    severity: ERROR
+    languages: [dart, java, kotlin, swift, csharp, php, javascript]
