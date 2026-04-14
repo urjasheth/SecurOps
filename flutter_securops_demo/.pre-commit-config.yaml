@@ -12,19 +12,18 @@ repos:
         description: "Scans for secrets and performs API verification pings"
         entry: trufflehog git file://. --since-commit HEAD --only-verified --fail
         language: system
-        stages: [commit]
+        stages: [pre-commit]
 
   # 2. SAST SCANNING (Unified Ruleset)
-  - repo: https://github.com/returntocorp/semgrep
-    rev: v1.52.0
+  - repo: local
     hooks:
       - id: semgrep
         name: "🔍 Unified Security Scanner (Semgrep)"
         description: "Scans for Android, iOS, Flutter, .NET, and PHP vulnerabilities"
-        entry: semgrep scan --config=semgrep-hybrid.yml --error --quiet
+        entry: semgrep scan --config flutter_securops_demo/semgrep-hybrid.yml --error flutter_securops_demo
         language: system
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
 
   # 3. DEPENDENCY SCANNING (Trivy - Multi-tech)
   - repo: local
@@ -35,7 +34,7 @@ repos:
         entry: trivy fs --scanners vuln --severity HIGH,CRITICAL .
         language: system
         pass_filenames: false
-        stages: [push]
+        stages: [pre-push]
 
   # 4. BASIC SAFETY CHECKS
   - repo: https://github.com/pre-commit/pre-commit-hooks
